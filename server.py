@@ -109,9 +109,15 @@ def dfunction():
         </form>
         ''')
 
-def color(c,i,cid):
-    if i==cid:
+def color(i,cid,vs):
+    cs = [clausetoz3(c) for c in vs]
+    c = vs[i]
+    if eq(cs[i],cs[cid]):
         return f'<strong>{escape(c)}</strong>'
+    elif subsumes(cs[i],cs[cid]):
+        return f'<s>{escape(c)}</s>'
+    elif subsumes(cs[cid],cs[i]):
+        return f'<em>{escape(c)}</em>'
     else:
         return escape(c)
 
@@ -125,7 +131,7 @@ def bfunction(clauseid):
     <hr>
     {name}({args})
     <ul>'''+
-    ''.join(f'<li>{color(c,i,clauseid)}' for i,c in enumerate(clauses))+
+    ''.join(f'<li>{color(i,clauseid,clauses)}' for i,c in enumerate(clauses))+
     f'''</ul>
     <hr>
     ''')
