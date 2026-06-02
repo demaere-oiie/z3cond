@@ -113,11 +113,11 @@ def color(i,cid,vs):
     cs = [clausetoz3(c) for c in vs]
     c = vs[i]
     if eq(cs[i],cs[cid]):
-        return f'<div style="background-color:yellow">{escape(c)}</div>'
+        return f'<div style="background-color:lightgreen">{escape(c)}</div>'
     elif subsumes(cs[cid],cs[i]):
         return f'<div style="background-color:lightblue">{escape(c)}</div>'
     elif subsumes(cs[i],cs[cid]):
-        return f'<div style="background-color:lightgreen">{escape(c)}</div>'
+        return f'<div style="background-color:lightyellow">{escape(c)}</div>'
     else:
         return escape(c)
 
@@ -132,12 +132,14 @@ def bfunction(clauseid):
     if previd < 0: previd = len(clauses)-1
     return (f'''
     <!doctype html>
+    <div style="background-color:lightgrey">
     <hr>
     {name}({args})
     <ul>'''+
     ''.join(f'<li>{color(i,clauseid,clauses)}' for i,c in enumerate(clauses))+
     f'''</ul>
     <hr>
+    </div>
     <form action="/bfn/{nextid}" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
