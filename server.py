@@ -126,6 +126,10 @@ def bfunction(clauseid):
     vs = request.form['state'].split('::')
     name, args = vs[:2]
     clauses = vs[2:]
+    nextid = clauseid+1
+    if nextid >= len(clauses): nextid=0
+    previd = clauseid-1
+    if previd < 0: previd = len(clauses)-1
     return (f'''
     <!doctype html>
     <hr>
@@ -134,6 +138,16 @@ def bfunction(clauseid):
     ''.join(f'<li>{color(i,clauseid,clauses)}' for i,c in enumerate(clauses))+
     f'''</ul>
     <hr>
+    <form action="/bfn/{nextid}" method=post>
+            <input type=hidden name=state value="{mkstate(
+                name, args, clauses)}">
+            <input type=submit value="+">
+    </form>
+    <form action="/bfn/{previd}" method=post>
+            <input type=hidden name=state value="{mkstate(
+                name, args, clauses)}">
+            <input type=submit value="-">
+    </form>
     ''')
 
 
