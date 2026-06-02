@@ -64,6 +64,20 @@ def simplicial(clauses):
             return False
     return True
 
+def needs(clauses):
+    v = [clausetoz3(c) for c in clauses]
+    for i,x in enumerate(v):
+      for j,y in enumerate(v):
+        if i>=j: continue
+        w = And(x,y)
+        if not any(eq(w,z) for z in v):
+            for k, v in table.items():
+                if eq(w,v):
+                    return f'try {k}'
+            return 'try ???'
+    return ''
+
+
 @app.post('/fn')
 def dfunction():
     if 'name' in request.form:
@@ -76,7 +90,7 @@ def dfunction():
                 request.form['name'], request.form['args'],[])}">
             <input type=text name=cond>
             <input type=text name=val>
-            <input type=submit value=Define>
+            <input type=submit value="Add Clause">
         </form>
         '''
     else:
@@ -96,12 +110,13 @@ def dfunction():
         {(not complete(clauses))*"incomplete"}
         {(not simplicial(clauses))*"overlapping"}
         </block>
+        {needs(clauses)}
         <form action="/fn" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
             <input type=text name=cond>
             <input type=text name=val>
-            <input type=submit value=Define>
+            <input type=submit value="Add Clause">
         </form>
         <br/>
         <form action="/bfn/0" method=post>
@@ -179,4 +194,4 @@ def homepage():
     '''
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080)
