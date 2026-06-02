@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import Flask, request, send_from_directory
+from markupsafe import escape
 from z3 import *
 
 app = Flask(__name__)
@@ -12,7 +13,7 @@ n, m = Ints('n m')
 table = {
 "n>=m": n >= m,
 "n>m":  n > m,
-"n<m":  n < m,
+"n<m": n < m,
 "m>=n": m >= n,
 "m>n":  m > n,
 "n==m": n == m,
@@ -22,6 +23,8 @@ table = {
 "n>=0": n>=0,
 "n<=0": n<=0,
 "True": True,
+"n==n": True,
+"m==m": True,
 }
 
 def clausetoz3(c):
@@ -86,7 +89,7 @@ def dfunction():
         <hr>
         {name}({args})
         <ul>'''+
-        ''.join(f'<li>{c}' for c in clauses)+
+        ''.join(f'<li>{escape(c)}' for c in clauses)+
         f'''</ul>
         <hr>
         {(not complete(clauses))*"incomplete"}
@@ -98,7 +101,35 @@ def dfunction():
             <input type=text name=val>
             <input type=submit value=Define>
         </form>
+        <br/>
+        <form action="/bfn/0" method=post>
+            <input type=hidden name=state value="{mkstate(
+                name, args, clauses)}">
+            <input type=submit value=Browse>
+        </form>
         ''')
+
+def color(c,i,cid):
+    if i==cid:
+        return f'<strong>{escape(c)}</strong>'
+    else:
+        return escape(c)
+
+@app.post('/bfn/<int:clauseid>')
+def bfunction(clauseid):
+    vs = request.form['state'].split('::')
+    name, args = vs[:2]
+    clauses = vs[2:]
+    return (f'''
+    <!doctype html>
+    <hr>
+    {name}({args})
+    <ul>'''+
+    ''.join(f'<li>{color(c,i,clauseid)}' for i,c in enumerate(clauses))+
+    f'''</ul>
+    <hr>
+    ''')
+
 
 @app.route('/')
 def homepage():
