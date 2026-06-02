@@ -1,11 +1,65 @@
 from datetime import datetime
 from flask import Flask, request, send_from_directory
+from z3 import *
 
 app = Flask(__name__)
 
 def mkstate(name,args,clauses):
     return "::".join([name,args]+clauses)
 
+n, m = Ints('n m')
+
+table = {
+"n>=m": n >= m,
+"n>m":  n > m,
+"n<m":  n < m,
+"m>=n": m >= n,
+"m>n":  m > n,
+"n==m": n == m,
+"n<=m": m >= n,
+"n>0":  n > 0,
+"n==0": n==0,
+"n>=0": n>=0,
+"n<=0": n<=0,
+"True": True,
+}
+
+def clausetoz3(c):
+    cond = c.split(" ⟼  ")[0]
+    return table[cond]
+
+def checkshadow(*cs):
+    s = Solver()
+    for c in cs:
+        s.push()
+        s.add(c)
+        if s.check() == unsat:
+            return False
+        s.pop()
+        s.add(Not(c))
+    return True
+
+def complete(clauses):
+    v = [clausetoz3(c) for c in clauses]
+    return not checkshadow(*v+[True])
+
+def subsumes(a,b):
+    s = Solver()
+    s.add(And(a, Not(b)))
+    return s.check() == unsat
+
+def eq(a,b):
+    return subsumes(a,b) and subsumes(b,a)
+
+def simplicial(clauses):
+    v = [clausetoz3(c) for c in clauses]
+    for i,x in enumerate(v):
+      for j,y in enumerate(v):
+        if i>=j: continue
+        w = And(x,y)
+        if not any(eq(w,z) for z in v):
+            return False
+    return True
 
 @app.post('/fn')
 def dfunction():
@@ -35,6 +89,8 @@ def dfunction():
         ''.join(f'<li>{c}' for c in clauses)+
         f'''</ul>
         <hr>
+        {(not complete(clauses))*"incomplete"}
+        {(not simplicial(clauses))*"overlapping"}
         <form action="/fn" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
