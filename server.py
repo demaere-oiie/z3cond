@@ -117,7 +117,7 @@ def color(i,cid,vs):
     elif subsumes(cs[cid],cs[i]):
         return f'<div style="background-color:lightblue">{escape(c)}</div>'
     elif subsumes(cs[i],cs[cid]):
-        return f'<div style="background-color:pink">{escape(c)}</div>'
+        return f'<div style="background-color:lightgreen">{escape(c)}</div>'
     else:
         return escape(c)
 
