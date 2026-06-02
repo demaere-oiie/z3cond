@@ -92,8 +92,10 @@ def dfunction():
         ''.join(f'<li>{escape(c)}' for c in clauses)+
         f'''</ul>
         <hr>
+        <block style="color:red">
         {(not complete(clauses))*"incomplete"}
         {(not simplicial(clauses))*"overlapping"}
+        </block>
         <form action="/fn" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
@@ -150,6 +152,16 @@ def bfunction(clauseid):
                 name, args, clauses)}">
             <input type=submit value="-">
     </form>
+    <div style="background-color:lightgrey">
+    <hr>
+    Legend:
+    <ul>
+    <li>the <block style="background-color:lightgreen">current</block> clause
+    <li>a <block style="background-color:lightblue">shadowed</block> clause
+    <li>a <block style="background-color:lightyellow">shadowing</block> clause
+    </ul>
+    <hr>
+    </div>
     ''')
 
 
