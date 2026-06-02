@@ -113,11 +113,11 @@ def color(i,cid,vs):
     cs = [clausetoz3(c) for c in vs]
     c = vs[i]
     if eq(cs[i],cs[cid]):
-        return f'<strong>{escape(c)}</strong>'
+        return f'<div style="background-color:yellow">{escape(c)}</div>'
     elif subsumes(cs[cid],cs[i]):
-        return f'<s>{escape(c)}</s>'
+        return f'<div style="background-color:lightblue">{escape(c)}</div>'
     elif subsumes(cs[i],cs[cid]):
-        return f'<em>{escape(c)}</em>'
+        return f'<div style="background-color:pink">{escape(c)}</div>'
     else:
         return escape(c)
 
