@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import Flask, request, send_from_directory
+from flask import Flask, request, send_from_directory, url_for
 from markupsafe import escape
 from z3 import *
 
@@ -140,12 +140,12 @@ def bfunction(clauseid):
     f'''</ul>
     <hr>
     </div>
-    <form action="/bfn/{nextid}" method=post>
+    <form action="{url_for('bfunction',clauseid=nextid)}" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
             <input type=submit value="+">
     </form>
-    <form action="/bfn/{previd}" method=post>
+    <form action="{url_for('bfunction',clauseid=previd)}" method=post>
             <input type=hidden name=state value="{mkstate(
                 name, args, clauses)}">
             <input type=submit value="-">
