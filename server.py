@@ -114,9 +114,9 @@ def color(i,cid,vs):
     c = vs[i]
     if eq(cs[i],cs[cid]):
         return f'<strong>{escape(c)}</strong>'
-    elif subsumes(cs[i],cs[cid]):
-        return f'<s>{escape(c)}</s>'
     elif subsumes(cs[cid],cs[i]):
+        return f'<s>{escape(c)}</s>'
+    elif subsumes(cs[i],cs[cid]):
         return f'<em>{escape(c)}</em>'
     else:
         return escape(c)
